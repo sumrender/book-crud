@@ -1,0 +1,58 @@
+@BooksCrudApi_HostAddress = http://localhost:5051
+
+### Get all books
+GET {{BooksCrudApi_HostAddress}}/api/books
+Accept: application/json
+
+###
+
+### Get book by ID (replace {id} with actual GUID)
+GET {{BooksCrudApi_HostAddress}}/api/books/{id}
+Accept: application/json
+
+###
+
+### Create a new book
+POST {{BooksCrudApi_HostAddress}}/api/books
+Content-Type: application/json
+
+{
+  "title": "Sample Book",
+  "description": "This is a sample book description",
+  "author": "Sample Author",
+  "isbn": "978-1234567890",
+  "publisher": "Sample Publisher",
+  "publicationYear": 2024,
+  "pageCount": 300,
+  "genre": "Fiction",
+  "language": "English",
+  "price": 19.99,
+  "isAvailable": true,
+  "coverImageUrl": "https://example.com/sample-cover.jpg"
+}
+
+###
+
+### Update a book (replace {id} with actual GUID)
+PUT {{BooksCrudApi_HostAddress}}/api/books/{id}
+Content-Type: application/json
+
+{
+  "title": "Updated Sample Book",
+  "description": "This is an updated sample book description",
+  "author": "Updated Sample Author",
+  "isbn": "978-1234567890",
+  "publisher": "Updated Sample Publisher",
+  "publicationYear": 2024,
+  "pageCount": 350,
+  "genre": "Fiction",
+  "language": "English",
+  "price": 24.99,
+  "isAvailable": true,
+  "coverImageUrl": "https://example.com/updated-sample-cover.jpg"
+}
+
+###
+
+### Delete a book (replace {id} with actual GUID)
+DELETE {{BooksCrudApi_HostAddress}}/api/books/{id}
