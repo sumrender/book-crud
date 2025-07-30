@@ -2,51 +2,6 @@
 
 A simple .NET Web API for managing books with SQL Server database.
 
-## Features
-
-- Full CRUD operations for books
-- SQL Server database storage
-- RESTful API design
-- Swagger/OpenAPI documentation
-- Data validation
-- Docker support
-
-## Database Setup
-
-### Using Docker Compose
-
-Start the SQL Server container:
-   ```bash
-   docker-compose up -d
-   ```
-
-The solution includes a SQL Server Database Project (`BooksCrudApi.Database`) that can be used to:
-- Publish the database schema
-- Deploy initial data
-- Manage database changes
-
-Use the Database Projects extension in Visual Studio to publish the database.
-
-## Book Properties
-
-The Book model includes 15 relevant properties:
-
-- **Id** (Guid): Unique identifier
-- **Title** (string): Book title (required, max 200 chars)
-- **Description** (string): Book description (max 1000 chars)
-- **Author** (string): Book author (required, max 100 chars)
-- **ISBN** (string): International Standard Book Number (max 50 chars)
-- **Publisher** (string): Book publisher (max 50 chars)
-- **PublicationYear** (int): Year of publication
-- **PageCount** (int): Number of pages
-- **Genre** (string): Book genre (max 50 chars)
-- **Language** (string): Book language (max 20 chars)
-- **Price** (decimal): Book price
-- **IsAvailable** (bool): Availability status
-- **CreatedOn** (DateTime): Creation timestamp
-- **UpdatedOn** (DateTime?): Last update timestamp
-- **CoverImageUrl** (string): Cover image URL (max 500 chars)
-
 ## Getting Started
 
 ### Prerequisites
@@ -61,10 +16,13 @@ The Book model includes 15 relevant properties:
    docker-compose up -d
    ```
 
-2. Navigate to the project directory:
-   ```bash
-   cd BooksCrudApi
-   ```
+2. The solution includes a SQL Server Database Project (`BooksCrudApi.Database`) that can be used to:
+- Publish the database schema
+- Deploy initial data
+- Manage database changes
+
+Use the Database Projects extension in Visual Studio Code to publish the database.
+
 
 3. Run the application:
    ```bash
@@ -109,10 +67,6 @@ Update an existing book
 
 ### DELETE /api/books/{id}
 Delete a book
-
-## Database Setup
-
-The database schema and initial data can be deployed using the included SQL Server Database Project (`BooksCrudApi.Database`). Use the Database Projects extension in Visual Studio to publish the database schema and data.
 
 ## Testing the API
 
