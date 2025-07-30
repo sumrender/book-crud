@@ -9,7 +9,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Register the BookService
-builder.Services.AddScoped<IBookService, BookService>();
+builder.Services.AddSingleton<IBookService, BookService>();
 
 var app = builder.Build();
 
