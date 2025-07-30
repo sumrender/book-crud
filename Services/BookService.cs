@@ -1,159 +1,120 @@
 using BooksCrudApi.Models;
+using BooksCrudApi.Models.DTOs;
+using BooksCrudApi.Repositories;
 
 namespace BooksCrudApi.Services
 {
     public interface IBookService
     {
-        Task<IEnumerable<Book>> GetAllBooksAsync();
-        Task<Book?> GetBookByIdAsync(Guid id);
-        Task<Book> CreateBookAsync(Book book);
-        Task<Book?> UpdateBookAsync(Guid id, Book book);
+        Task<IEnumerable<BookResponseDto>> GetAllBooksAsync();
+        Task<BookResponseDto?> GetBookByIdAsync(Guid id);
+        Task<BookResponseDto> CreateBookAsync(BookRequestDto bookDto);
+        Task<BookResponseDto?> UpdateBookAsync(Guid id, BookUpdateDto bookDto);
         Task<bool> DeleteBookAsync(Guid id);
     }
 
     public class BookService : IBookService
     {
-        private readonly List<Book> _books = new();
-        private readonly object _lock = new();
+        private readonly IBookRepository _bookRepository;
 
-        public BookService()
+        public BookService(IBookRepository bookRepository)
         {
-            // Seed with some sample data
-            SeedBooks();
+            _bookRepository = bookRepository;
         }
 
-        public async Task<IEnumerable<Book>> GetAllBooksAsync()
+        public async Task<IEnumerable<BookResponseDto>> GetAllBooksAsync()
         {
-            await Task.Delay(1); // Simulate async operation
-            lock (_lock)
-            {
-                return _books.ToList();
-            }
+            var books = await _bookRepository.GetAllAsync();
+            return books.Select(MapToResponseDto);
         }
 
-        public async Task<Book?> GetBookByIdAsync(Guid id)
+        public async Task<BookResponseDto?> GetBookByIdAsync(Guid id)
         {
-            await Task.Delay(1); // Simulate async operation
-            lock (_lock)
-            {
-                return _books.FirstOrDefault(b => b.Id == id);
-            }
+            var book = await _bookRepository.GetByIdAsync(id);
+            return book != null ? MapToResponseDto(book) : null;
         }
 
-        public async Task<Book> CreateBookAsync(Book book)
+        public async Task<BookResponseDto> CreateBookAsync(BookRequestDto bookDto)
         {
-            await Task.Delay(1); // Simulate async operation
-            lock (_lock)
-            {
-                book.Id = Guid.NewGuid();
-                book.CreatedOn = DateTime.UtcNow;
-                book.UpdatedOn = DateTime.UtcNow;
-                _books.Add(book);
-                return book;
-            }
+            var book = MapToEntity(bookDto);
+            var createdBook = await _bookRepository.CreateAsync(book);
+            return MapToResponseDto(createdBook);
         }
 
-        public async Task<Book?> UpdateBookAsync(Guid id, Book book)
+        public async Task<BookResponseDto?> UpdateBookAsync(Guid id, BookUpdateDto bookDto)
         {
-            await Task.Delay(1); // Simulate async operation
-            lock (_lock)
-            {
-                var existingBook = _books.FirstOrDefault(b => b.Id == id);
-                if (existingBook == null)
-                    return null;
+            var existingBook = await _bookRepository.GetByIdAsync(id);
+            if (existingBook == null)
+                return null;
 
-                existingBook.Title = book.Title;
-                existingBook.Description = book.Description;
-                existingBook.Author = book.Author;
-                existingBook.ISBN = book.ISBN;
-                existingBook.Publisher = book.Publisher;
-                existingBook.PublicationYear = book.PublicationYear;
-                existingBook.PageCount = book.PageCount;
-                existingBook.Genre = book.Genre;
-                existingBook.Language = book.Language;
-                existingBook.Price = book.Price;
-                existingBook.IsAvailable = book.IsAvailable;
-                existingBook.CoverImageUrl = book.CoverImageUrl;
-                existingBook.UpdatedOn = DateTime.UtcNow;
-
-                return existingBook;
-            }
+            UpdateEntityFromDto(existingBook, bookDto);
+            existingBook.UpdatedOn = DateTime.UtcNow;
+            
+            var updatedBook = await _bookRepository.UpdateAsync(id, existingBook);
+            return MapToResponseDto(updatedBook);
         }
 
         public async Task<bool> DeleteBookAsync(Guid id)
         {
-            await Task.Delay(1); // Simulate async operation
-            lock (_lock)
-            {
-                var book = _books.FirstOrDefault(b => b.Id == id);
-                if (book == null)
-                    return false;
-
-                return _books.Remove(book);
-            }
+            return await _bookRepository.DeleteAsync(id);
         }
 
-        private void SeedBooks()
+        private static Book MapToEntity(BookRequestDto dto)
         {
-            var sampleBooks = new List<Book>
+            return new Book
             {
-                new Book
-                {
-                    Id = Guid.NewGuid(),
-                    Title = "The Great Gatsby",
-                    Description = "A story of the fabulously wealthy Jay Gatsby and his love for the beautiful Daisy Buchanan.",
-                    Author = "F. Scott Fitzgerald",
-                    ISBN = "978-0743273565",
-                    Publisher = "Scribner",
-                    PublicationYear = 1925,
-                    PageCount = 180,
-                    Genre = "Fiction",
-                    Language = "English",
-                    Price = 12.99m,
-                    IsAvailable = true,
-                    CreatedOn = DateTime.UtcNow.AddDays(-30),
-                    UpdatedOn = DateTime.UtcNow.AddDays(-30),
-                    CoverImageUrl = "https://example.com/gatsby-cover.jpg"
-                },
-                new Book
-                {
-                    Id = Guid.NewGuid(),
-                    Title = "To Kill a Mockingbird",
-                    Description = "The story of young Scout Finch and her father Atticus in a racially divided Alabama town.",
-                    Author = "Harper Lee",
-                    ISBN = "978-0446310789",
-                    Publisher = "Grand Central Publishing",
-                    PublicationYear = 1960,
-                    PageCount = 281,
-                    Genre = "Fiction",
-                    Language = "English",
-                    Price = 14.99m,
-                    IsAvailable = true,
-                    CreatedOn = DateTime.UtcNow.AddDays(-25),
-                    UpdatedOn = DateTime.UtcNow.AddDays(-25),
-                    CoverImageUrl = "https://example.com/mockingbird-cover.jpg"
-                },
-                new Book
-                {
-                    Id = Guid.NewGuid(),
-                    Title = "1984",
-                    Description = "A dystopian novel about totalitarianism and surveillance society.",
-                    Author = "George Orwell",
-                    ISBN = "978-0451524935",
-                    Publisher = "Signet",
-                    PublicationYear = 1949,
-                    PageCount = 328,
-                    Genre = "Science Fiction",
-                    Language = "English",
-                    Price = 11.99m,
-                    IsAvailable = true,
-                    CreatedOn = DateTime.UtcNow.AddDays(-20),
-                    UpdatedOn = DateTime.UtcNow.AddDays(-20),
-                    CoverImageUrl = "https://example.com/1984-cover.jpg"
-                }
+                Title = dto.Title,
+                Description = dto.Description,
+                Author = dto.Author,
+                ISBN = dto.ISBN,
+                Publisher = dto.Publisher,
+                PublicationYear = dto.PublicationYear,
+                PageCount = dto.PageCount,
+                Genre = dto.Genre,
+                Language = dto.Language,
+                Price = dto.Price,
+                IsAvailable = dto.IsAvailable,
+                CoverImageUrl = dto.CoverImageUrl,
+                CreatedOn = DateTime.UtcNow
             };
+        }
 
-            _books.AddRange(sampleBooks);
+        private static void UpdateEntityFromDto(Book entity, BookUpdateDto dto)
+        {
+            if (dto.Title != null) entity.Title = dto.Title;
+            if (dto.Description != null) entity.Description = dto.Description;
+            if (dto.Author != null) entity.Author = dto.Author;
+            if (dto.ISBN != null) entity.ISBN = dto.ISBN;
+            if (dto.Publisher != null) entity.Publisher = dto.Publisher;
+            if (dto.PublicationYear.HasValue) entity.PublicationYear = dto.PublicationYear.Value;
+            if (dto.PageCount.HasValue) entity.PageCount = dto.PageCount.Value;
+            if (dto.Genre != null) entity.Genre = dto.Genre;
+            if (dto.Language != null) entity.Language = dto.Language;
+            if (dto.Price.HasValue) entity.Price = dto.Price.Value;
+            if (dto.IsAvailable.HasValue) entity.IsAvailable = dto.IsAvailable.Value;
+            if (dto.CoverImageUrl != null) entity.CoverImageUrl = dto.CoverImageUrl;
+        }
+
+        private static BookResponseDto MapToResponseDto(Book entity)
+        {
+            return new BookResponseDto
+            {
+                Id = entity.Id,
+                Title = entity.Title,
+                Description = entity.Description,
+                Author = entity.Author,
+                ISBN = entity.ISBN,
+                Publisher = entity.Publisher,
+                PublicationYear = entity.PublicationYear,
+                PageCount = entity.PageCount,
+                Genre = entity.Genre,
+                Language = entity.Language,
+                Price = entity.Price,
+                IsAvailable = entity.IsAvailable,
+                CreatedOn = entity.CreatedOn,
+                UpdatedOn = entity.UpdatedOn,
+                CoverImageUrl = entity.CoverImageUrl
+            };
         }
     }
 } 
