@@ -1,15 +1,31 @@
 # Books CRUD API
 
-A simple .NET Web API for managing books with in-memory storage.
+A simple .NET Web API for managing books with SQL Server database.
 
 ## Features
 
 - Full CRUD operations for books
-- In-memory data storage
+- SQL Server database storage
 - RESTful API design
 - Swagger/OpenAPI documentation
 - Data validation
-- Sample data included
+- Docker support
+
+## Database Setup
+
+### Using Docker Compose
+
+Start the SQL Server container:
+   ```bash
+   docker-compose up -d
+   ```
+
+The solution includes a SQL Server Database Project (`BooksCrudApi.Database`) that can be used to:
+- Publish the database schema
+- Deploy initial data
+- Manage database changes
+
+Use the Database Projects extension in Visual Studio to publish the database.
 
 ## Book Properties
 
@@ -36,20 +52,26 @@ The Book model includes 15 relevant properties:
 ### Prerequisites
 
 - .NET 8.0 SDK or later
+- Docker and Docker Compose (for database)
 
 ### Running the Application
 
-1. Navigate to the project directory:
+1. Start the SQL Server database:
+   ```bash
+   docker-compose up -d
+   ```
+
+2. Navigate to the project directory:
    ```bash
    cd BooksCrudApi
    ```
 
-2. Run the application:
+3. Run the application:
    ```bash
    dotnet run
    ```
 
-3. Open your browser and navigate to:
+4. Open your browser and navigate to:
    - API: http://localhost:5051/api/books
    - Swagger UI: http://localhost:5051/swagger
 
@@ -88,12 +110,9 @@ Update an existing book
 ### DELETE /api/books/{id}
 Delete a book
 
-## Sample Data
+## Database Setup
 
-The API comes pre-loaded with 3 sample books:
-- The Great Gatsby by F. Scott Fitzgerald
-- To Kill a Mockingbird by Harper Lee
-- 1984 by George Orwell
+The database schema and initial data can be deployed using the included SQL Server Database Project (`BooksCrudApi.Database`). Use the Database Projects extension in Visual Studio to publish the database schema and data.
 
 ## Testing the API
 
@@ -132,7 +151,8 @@ curl -X POST "http://localhost:5051/api/books" \
 
 ## Notes
 
-- Data is stored in memory and will be reset when the application restarts
+- Data is stored in SQL Server database
 - The API uses GUIDs for book IDs
 - All timestamps are in UTC
-- The service is thread-safe with proper locking mechanisms 
+- The service is thread-safe with proper locking mechanisms
+- Database schema and data can be managed through the Database Project 

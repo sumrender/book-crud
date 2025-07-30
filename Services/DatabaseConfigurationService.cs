@@ -8,7 +8,7 @@ namespace BooksCrudApi.Services
         public static void ConfigureDatabase(IServiceCollection services, IConfiguration configuration)
         {
             var useInMemoryDatabase = configuration.GetValue<bool>("DatabaseSettings:UseInMemoryDatabase");
-            var databaseName = configuration.GetValue<string>("DatabaseSettings:DatabaseName") ?? "BooksDb";
+            var databaseName = configuration.GetValue<string>("DatabaseSettings:DatabaseName") ?? "BooksCrudApi.Database";
 
             if (useInMemoryDatabase)
             {
