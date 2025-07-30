@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using BooksCrudApi.Models;
+using BooksCrudApi.Models.DTOs;
 using BooksCrudApi.Services;
 
 namespace BooksCrudApi.Controllers
@@ -17,7 +17,7 @@ namespace BooksCrudApi.Controllers
 
         // GET: api/books
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Book>>> GetBooks()
+        public async Task<ActionResult<IEnumerable<BookResponseDto>>> GetBooks()
         {
             var books = await _bookService.GetAllBooksAsync();
             return Ok(books);
@@ -25,7 +25,7 @@ namespace BooksCrudApi.Controllers
 
         // GET: api/books/{id}
         [HttpGet("{id}")]
-        public async Task<ActionResult<Book>> GetBook(Guid id)
+        public async Task<ActionResult<BookResponseDto>> GetBook(Guid id)
         {
             var book = await _bookService.GetBookByIdAsync(id);
             
@@ -39,28 +39,28 @@ namespace BooksCrudApi.Controllers
 
         // POST: api/books
         [HttpPost]
-        public async Task<ActionResult<Book>> CreateBook(Book book)
+        public async Task<ActionResult<BookResponseDto>> CreateBook(BookRequestDto bookDto)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var createdBook = await _bookService.CreateBookAsync(book);
+            var createdBook = await _bookService.CreateBookAsync(bookDto);
             
             return CreatedAtAction(nameof(GetBook), new { id = createdBook.Id }, createdBook);
         }
 
         // PUT: api/books/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateBook(Guid id, Book book)
+        public async Task<ActionResult<BookResponseDto>> UpdateBook(Guid id, BookUpdateDto bookDto)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var updatedBook = await _bookService.UpdateBookAsync(id, book);
+            var updatedBook = await _bookService.UpdateBookAsync(id, bookDto);
             
             if (updatedBook == null)
             {

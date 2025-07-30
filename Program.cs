@@ -1,4 +1,7 @@
 using BooksCrudApi.Services;
+using BooksCrudApi.Repositories;
+using BooksCrudApi.Data;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,8 +11,14 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Configure Entity Framework with In-Memory Database
+DatabaseConfigurationService.ConfigureDatabase(builder.Services, builder.Configuration);
+
+// Register repositories
+builder.Services.AddScoped<IBookRepository, BookRepository>();
+
 // Register the BookService
-builder.Services.AddSingleton<IBookService, BookService>();
+builder.Services.AddScoped<IBookService, BookService>();
 
 var app = builder.Build();
 
