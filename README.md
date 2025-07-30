@@ -50,8 +50,8 @@ The Book model includes 15 relevant properties:
    ```
 
 3. Open your browser and navigate to:
-   - API: https://localhost:7001/api/books
-   - Swagger UI: https://localhost:7001/swagger
+   - API: http://localhost:5051/api/books
+   - Swagger UI: http://localhost:5051/swagger
 
 ## API Endpoints
 
@@ -106,13 +106,13 @@ You can test the API using:
 
 ```bash
 # Get all books
-curl -X GET "https://localhost:7001/api/books"
+curl -X GET "http://localhost:5051/api/books"
 
 # Get a specific book (replace {id} with actual GUID)
-curl -X GET "https://localhost:7001/api/books/{id}"
+curl -X GET "http://localhost:5051/api/books/{id}"
 
 # Create a new book
-curl -X POST "https://localhost:7001/api/books" \
+curl -X POST "http://localhost:5051/api/books" \
   -H "Content-Type: application/json" \
   -d '{
     "title": "New Book",
