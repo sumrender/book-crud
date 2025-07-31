@@ -17,10 +17,22 @@ namespace BooksCrudApi.Controllers
 
         // GET: api/books
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<BookResponseDto>>> GetBooks()
+        public async Task<ActionResult<PaginatedResponseDto<BookResponseDto>>> GetBooks(
+            [FromQuery] int skip = 0, 
+            [FromQuery] int take = 10)
         {
-            var books = await _bookService.GetAllBooksAsync();
-            return Ok(books);
+            if (take <= 0)
+            {
+                return BadRequest("Take parameter must be greater than 0");
+            }
+            
+            if (skip < 0)
+            {
+                return BadRequest("Skip parameter must be greater than or equal to 0");
+            }
+            
+            var paginatedBooks = await _bookService.GetPaginatedBooksAsync(skip, take);
+            return Ok(paginatedBooks);
         }
 
         // GET: api/books/{id}

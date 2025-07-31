@@ -7,6 +7,7 @@ namespace BooksCrudApi.Services
     public interface IBookService
     {
         Task<IEnumerable<BookResponseDto>> GetAllBooksAsync();
+        Task<PaginatedResponseDto<BookResponseDto>> GetPaginatedBooksAsync(int skip, int take);
         Task<BookResponseDto?> GetBookByIdAsync(Guid id);
         Task<BookResponseDto> CreateBookAsync(BookRequestDto bookDto);
         Task<BookResponseDto?> UpdateBookAsync(Guid id, BookUpdateDto bookDto);
@@ -26,6 +27,24 @@ namespace BooksCrudApi.Services
         {
             var books = await _bookRepository.GetAllAsync();
             return books.Select(MapToResponseDto);
+        }
+
+        public async Task<PaginatedResponseDto<BookResponseDto>> GetPaginatedBooksAsync(int skip, int take)
+        {
+            var (books, totalCount) = await _bookRepository.GetPaginatedAsync(skip, take);
+            var bookDtos = books.Select(MapToResponseDto);
+            
+            var pageNumber = (skip / take) + 1;
+            var totalPages = (int)Math.Ceiling((double)totalCount / take);
+            
+            return new PaginatedResponseDto<BookResponseDto>
+            {
+                Data = bookDtos,
+                TotalCount = totalCount,
+                PageNumber = pageNumber,
+                PageSize = take,
+                TotalPages = totalPages
+            };
         }
 
         public async Task<BookResponseDto?> GetBookByIdAsync(Guid id)

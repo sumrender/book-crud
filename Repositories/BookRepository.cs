@@ -18,6 +18,17 @@ namespace BooksCrudApi.Repositories
             return await _context.Books.ToListAsync();
         }
 
+        public async Task<(IEnumerable<Book> Books, int TotalCount)> GetPaginatedAsync(int skip, int take)
+        {
+            var totalCount = await _context.Books.CountAsync();
+            var books = await _context.Books
+                .Skip(skip)
+                .Take(take)
+                .ToListAsync();
+            
+            return (books, totalCount);
+        }
+
         public async Task<Book?> GetByIdAsync(Guid id)
         {
             return await _context.Books.FindAsync(id);
