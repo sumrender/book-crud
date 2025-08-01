@@ -18,10 +18,22 @@ namespace BooksCrudApi.Services
             }
             else
             {
-                // Use SQL Server
+                // Use SQL Server with retry logic and connection pooling
                 var connectionString = configuration.GetConnectionString("DefaultConnection");
                 services.AddDbContext<ApplicationDbContext>(options =>
-                    options.UseSqlServer(connectionString));
+                    options.UseSqlServer(connectionString, 
+                        sqlServerOptionsAction: sqlOptions =>
+                        {
+                            // Enable retry on failure for transient errors
+                            sqlOptions.EnableRetryOnFailure(
+                                maxRetryCount: 5,
+                                maxRetryDelay: TimeSpan.FromSeconds(30),
+                                errorNumbersToAdd: null);
+                            
+                            // Configure connection pooling and performance settings
+                            sqlOptions.MaxBatchSize(100);
+                            sqlOptions.CommandTimeout(30);
+                        }));
             }
         }
     }

@@ -15,13 +15,14 @@ namespace BooksCrudApi.Repositories
 
         public async Task<IEnumerable<Book>> GetAllAsync()
         {
-            return await _context.Books.ToListAsync();
+            return await _context.Books.AsNoTracking().ToListAsync();
         }
 
         public async Task<(IEnumerable<Book> Books, int TotalCount)> GetPaginatedAsync(int skip, int take)
         {
             var totalCount = await _context.Books.CountAsync();
             var books = await _context.Books
+                .AsNoTracking()
                 .Skip(skip)
                 .Take(take)
                 .ToListAsync();
@@ -31,7 +32,7 @@ namespace BooksCrudApi.Repositories
 
         public async Task<Book?> GetByIdAsync(Guid id)
         {
-            return await _context.Books.FindAsync(id);
+            return await _context.Books.AsNoTracking().FirstOrDefaultAsync(b => b.Id == id);
         }
 
         public async Task<Book> CreateAsync(Book book)
@@ -83,7 +84,7 @@ namespace BooksCrudApi.Repositories
 
         public async Task<bool> ExistsAsync(Guid id)
         {
-            return await _context.Books.AnyAsync(b => b.Id == id);
+            return await _context.Books.AsNoTracking().AnyAsync(b => b.Id == id);
         }
     }
 } 
